@@ -195,7 +195,7 @@
     // FIXME typeof uint8 === "function", need a better way
     var outputType = objectType(this).elementType;
     return ReducePar(this, outputType, a, b);
-  }
+  };
 
   function ReducePar(array, outputType, func, initial) {
     var start, value;
@@ -242,4 +242,48 @@
 
     return value;
   }
+
+  ArrayType.prototype.prototype.scanPar = function(a, b) {
+    // Arguments: [outputType], func
+    return ScanPar(this, a, b);
+  };
+
+  function ScanPar(array, outputArrayType, func) {
+    if (!outputArrayType instanceof ArrayType)
+      throw new RangeError("Output type "+outputArrayType+
+                           " must be array type");
+    if (array.length < 1)
+      throw new RangeError("Cannot scan an array of length < 1");
+
+    var outElemType = outputArrayType.elementType;
+    var outElemTypeIsScalar = isScalarType(outElemType);
+
+    var start = 1;
+
+    var output = new outputArrayType();
+    var nextHandle = outElemType.handle(output, 0);
+    Handle.set(nextHandle, array[0]);
+    var prevHandle = outElemType.handle(output, 0);
+
+    var inGrainType = objectType(array).elementType;
+    var inGrainTypeIsScalar = isScalarType(inGrainType);
+
+    var inHandle = inGrainType.handle();
+
+    for (var i = start; i < array.length; i++) {
+      Handle.move.call(null, prevHandle, output, i-1);
+      Handle.move.call(null, nextHandle, output, i);
+      Handle.move.call(null, inHandle, array, i);
+
+      var lftElem = (outElemTypeIsScalar ? Handle.get(prevHandle) : prevHandle);
+      var rgtElem = (inGrainTypeIsScalar ? Handle.get(inHandle) : inHandle);
+
+      var r = func(lftElem, rgtElem, nextHandle);
+      if (r !== undefined)
+        Handle.set(nextHandle, r); // *nextHandle = r
+    }
+
+    return output;
+  }
+
 })();
