@@ -87,6 +87,26 @@ function reduceVectors() {
   }
 }
 
+function scanUint8s() {
+  var uint8Array = new ArrayType(uint8, 5);
+  var float64Array = new ArrayType(float64, 5);
+  var array = new uint8Array([128, 129, 130, 131, 132]);
+
+  var sum = array.scanPar(uint8Array, (a, b) => a + b);
+  assertEq(sum, [(128)                 % 256,
+                 (128+129)             % 256,
+                 (128+129+130)         % 256,
+                 (128+129+130+131)     % 256,
+                 (128+129+130+131+132) % 256]);
+
+  var sum = array.scanPar(float64Array, (a, b) => a + b);
+  assertEq(sum, [128,
+                 128+129,
+                 128+129+130,
+                 128+129+130+131,
+                 128+129+130+131+132]);
+}
+
 try {
 
   oneDimensionalArrayOfUints();
@@ -100,6 +120,8 @@ try {
   reduceUint8s();
 
   reduceVectors();
+
+  scanUint8s();
 
 } catch (e) {
   print(e.name);
