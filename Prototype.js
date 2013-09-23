@@ -245,7 +245,7 @@
 
     var output = new outputArrayType();
     var nextHandle = outElemType.handle(output, 0);
-    Handle.set(nextHandle, output[0]);
+    Handle.set(nextHandle, array[0]);
     var prevHandle = outElemType.handle(output, 0);
 
     var inGrainType = objectType(array).elementType;
@@ -254,14 +254,14 @@
     var inHandle = inGrainType.handle();
 
     for (var i = start; i < array.length; i++) {
-      Handle.move.call(null, prevHandle, i-1);
-      Handle.move.call(null, nextHandle, i);
-      Handle.move.call(null, inHandle, i);
+      Handle.move.call(null, prevHandle, output, i-1);
+      Handle.move.call(null, nextHandle, output, i);
+      Handle.move.call(null, inHandle, array, i);
 
       var lftElem = (outElemTypeIsScalar ? Handle.get(prevHandle) : prevHandle);
       var rgtElem = (inGrainTypeIsScalar ? Handle.get(inHandle) : inHandle);
 
-      var r = func(prevHandle, inHandle, nextHandle);
+      var r = func(lftElem, rgtElem, nextHandle);
       if (r !== undefined)
         Handle.set(nextHandle, r); // *nextHandle = r
     }

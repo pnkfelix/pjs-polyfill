@@ -93,18 +93,18 @@ function scanUint8s() {
   var array = new uint8Array([128, 129, 130, 131, 132]);
 
   var sum = array.scanPar(uint8Array, (a, b) => a + b);
-  assertEq(sum, [(128)                 % 256,
-                 (128+129)             % 256,
-                 (128+129+130)         % 256,
-                 (128+129+130+131)     % 256,
-                 (128+129+130+131+132) % 256]);
+  assertTypedEqual(uint8Array, sum, [(128)                 % 256,
+                                     (128+129)             % 256,
+                                     (128+129+130)         % 256,
+                                     (128+129+130+131)     % 256,
+                                     (128+129+130+131+132) % 256]);
 
   var sum = array.scanPar(float64Array, (a, b) => a + b);
-  assertEq(sum, [128,
-                 128+129,
-                 128+129+130,
-                 128+129+130+131,
-                 128+129+130+131+132]);
+  assertTypedEqual(float64Array, sum, [128,
+                                       128+129,
+                                       128+129+130,
+                                       128+129+130+131,
+                                       128+129+130+131+132]);
 }
 
 try {
