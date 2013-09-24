@@ -258,6 +258,9 @@
     var outElemType = outputArrayType.elementType;
     var outElemTypeIsScalar = isScalarType(outElemType);
 
+    // FIXME: We need to figure out whether we need to check whether outElemType
+    // "matches" inGrainType, or if no such such check should be done.
+
     var start = 1;
 
     var output = new outputArrayType();
@@ -271,9 +274,9 @@
     var inHandle = inGrainType.handle();
 
     for (var i = start; i < array.length; i++) {
-      Handle.move.call(null, prevHandle, output, i-1);
-      Handle.move.call(null, nextHandle, output, i);
-      Handle.move.call(null, inHandle, array, i);
+      Handle.move(prevHandle, output, i-1);
+      Handle.move(nextHandle, output, i);
+      Handle.move(inHandle, array, i);
 
       var lftElem = (outElemTypeIsScalar ? Handle.get(prevHandle) : prevHandle);
       var rgtElem = (inGrainTypeIsScalar ? Handle.get(inHandle) : inHandle);
